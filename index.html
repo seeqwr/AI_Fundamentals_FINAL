@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Quiet Grid — AI Fundamentals Final Project</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ══════════════════════════════════════════════
+         NAVIGATION
+    ══════════════════════════════════════════════ -->
+    <nav id="navbar" class="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">
+                <span class="logo-icon">▣</span> THE QUIET GRID
+            </a>
+            <ul class="nav-links">
+                <li><a href="#hero">Prologue</a></li>
+                <li><a href="#game">The Grid</a></li>
+                <li><a href="#algorithms">Algorithms</a></li>
+                <li><a href="#footer">Core Data</a></li>
+                <li><button class="nav-cta" onclick="startSurvivalNow()">Play Now</button></li>
+            </ul>
+            <button id="navToggle" class="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════════════════════════════
+         SECTION 1 — HERO
+    ══════════════════════════════════════════════ -->
+    <section id="hero" class="hero-section">
+        <div class="hero-bg-effects">
+            <div class="grid-overlay"></div>
+            <div class="scanline"></div>
+            <div class="vignette"></div>
+        </div>
+
+        <div class="hero-content">
+            <h1 class="hero-title glitch" data-text="THE QUIET GRID">
+                THE QUIET GRID
+            </h1>
+            <p class="hero-subtitle">
+                A Cyberpunk Stealth Horror Experience.<br>
+                Outsmart the machine in the dark.
+            </p>
+            <p class="hero-course">AI Fundamentals Final Project · QAIRU 2026</p>
+
+            <div class="hero-buttons">
+                <button class="btn btn-primary" id="btnStartSurvival" onclick="startSurvivalNow()">
+                    <span class="btn-icon">▶</span> Начать выживание
+                </button>
+                <a href="#algorithms" class="btn btn-outline">
+                    <span class="btn-icon">◈</span> Архитектура ИИ
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════
+         SECTION 2 — GAME (THE IN-BROWSER GRID)
+    ══════════════════════════════════════════════ -->
+    <section id="game" class="game-section">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-top-meta">
+                    <span class="section-number">02 / THE IN-BROWSER GRID</span>
+                    <span id="engineBadge" class="engine-badge badge-client">ПРОВЕРКА СЕРВЕРА...</span>
+                </div>
+                <h2 class="section-title">ENTER THE LABYRINTH</h2>
+            </div>
+
+            <div class="game-layout">
+                <!-- Left Metrics Panel -->
+                <aside class="metrics-panel metrics-left" id="metricsLeft">
+                    <div class="metric-block">
+                        <div class="metric-label">ALERT LEVEL</div>
+                        <div class="metric-value status-low" id="alertLevel">LOW</div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill alert-fill" id="alertBar" style="width: 5%"></div>
+                        </div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">HMM ШУМ / ОБНАРУЖЕНИЕ</div>
+                        <div class="metric-value status-prob" id="detectionProb">5%</div>
+                        <div class="metric-subtext">Вероятность локации игрока</div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">COGNITIVE STRESS</div>
+                        <div class="stress-graph" id="stressGraph" role="img" aria-label="Когнитивный стресс: ожидание игры">
+                            <svg viewBox="0 0 200 40" class="stress-svg">
+                                <polyline class="stress-line" points="0,22 200,22"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">MINI-MAP (ТУМАН ВОЙНЫ)</div>
+                        <div class="minimap-container">
+                            <canvas id="minimapCanvas" width="160" height="160"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">СЧЕТЧИК ХОДОВ</div>
+                        <div class="metric-value turn-value" id="turnCounter">0</div>
+                    </div>
+                </aside>
+
+                <!-- Game Canvas & Interactive Viewport -->
+                <div class="canvas-wrapper">
+                    <canvas id="gameCanvas" width="800" height="520"></canvas>
+                    
+                    <!-- Overlay Start Button -->
+                    <div class="canvas-overlay" id="canvasOverlay" onclick="initGame()">
+                        <div class="overlay-modal">
+                            <div class="overlay-icon">▣</div>
+                            <span class="canvas-overlay-text">[ НАЖМИТЕ ДЛЯ СТАРТА ВЫЖИВАНИЯ ]</span>
+                            <p class="overlay-subtext">WASD / Стрелки · Пробел — ждать · E — шумовая колба</p>
+                        </div>
+                    </div>
+
+                    <!-- Game Over / Victory Screamer Modal -->
+                    <div class="game-over-overlay" id="gameOverOverlay">
+                        <div class="game-over-box">
+                            <h2 class="game-over-title" id="gameOverTitle">GAME OVER</h2>
+                            <p class="game-over-sub" id="gameOverSub">Монстр настиг вас в темноте.</p>
+                            <button class="btn btn-primary" onclick="initGame()">
+                                <span class="btn-icon">↺</span> ИГРАТЬ СНОВА
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Metrics Panel -->
+                <aside class="metrics-panel metrics-right" id="metricsRight">
+                    <div class="metric-block">
+                        <div class="metric-label">РЕЖИМ ИИ</div>
+                        <div id="aiStatusMode" class="mode-pill patrol">HMM PATROL</div>
+                        <div class="metric-subtext" id="monsterDetails">HMM слушает шум • A* преследует</div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">SOUND SCANNER (АКУСТИКА)</div>
+                        <div class="sound-scanner-box">
+                            <canvas id="soundCanvas" width="160" height="60"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">ИНВЕНТАРЬ</div>
+                        <div class="inventory-slots" id="inventory">
+                            <div class="inv-slot" id="invKeySlot" title="Ключ от выхода">
+                                <span class="slot-empty">🔒</span>
+                            </div>
+                            <div class="inv-slot active" title="Акустический сканер">
+                                <span>📡</span>
+                            </div>
+                            <button type="button" class="inv-slot active" id="invDecoySlot" title="Шумовая колба (E)" aria-label="Бросить шумовую колбу" aria-pressed="false" aria-describedby="decoyHint" disabled>
+                                <span aria-hidden="true">🧪</span><span class="slot-tag" id="decoyCount">3</span>
+                            </button>
+                        </div>
+                        <p class="metric-subtext decoy-hint" id="decoyHint" aria-live="polite">E или колба → клик по видимой клетке. Бросок занимает ход.</p>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">ЖУРНАЛ СОБЫТИЙ</div>
+                        <div class="event-log-text" id="gameEventLog">Сетка стабильна. Ожидание первого шага...</div>
+                    </div>
+
+                    <div class="metric-block">
+                        <div class="metric-label">УПРАВЛЕНИЕ ХОДОМ</div>
+                        <div class="virtual-controls">
+                            <button class="dpad-btn up" onclick="window.quietGrid.sendMove('up')" title="Вверх (W)">▲</button>
+                            <div class="dpad-middle">
+                                <button class="dpad-btn left" onclick="window.quietGrid.sendMove('left')" title="Влево (A)">◀</button>
+                                <button class="dpad-btn wait" onclick="window.quietGrid.sendMove('wait')" title="Ждать (Space)">⏳</button>
+                                <button class="dpad-btn right" onclick="window.quietGrid.sendMove('right')" title="Вправо (D)">▶</button>
+                            </div>
+                            <button class="dpad-btn down" onclick="window.quietGrid.sendMove('down')" title="Вниз (S)">▼</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel" id="controlsPanel">
+                <div class="control-group">
+                    <label class="control-label" for="aiStatus">Текущий статус ИИ</label>
+                    <div class="status-indicator" id="aiStatus">
+                        <span class="status-dot patrol"></span>
+                        <span class="status-text" id="aiStatusText">ПАТРУЛЬ (HMM)</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="hearingRadius">Радиус слуха монстра (HMM): <span class="slider-value" id="hearingValue">5</span></label>
+                    <input type="range" id="hearingRadius" class="slider" min="2" max="10" value="5">
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="visionRadius">Радиус зрения погони (A*): <span class="slider-value" id="visionValue">4</span></label>
+                    <input type="range" id="visionRadius" class="slider" min="2" max="8" value="4">
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="gridSize">Размер сетки (CSP): <span class="slider-value" id="gridSizeValue">21</span></label>
+                    <input type="range" id="gridSize" class="slider" min="15" max="27" step="2" value="21">
+                </div>
+                <div class="control-group full-width-btn">
+                    <label class="control-label" for="monsterType">Противник в следующем лабиринте</label>
+                    <select id="monsterType" class="monster-select" aria-describedby="monsterHelp">
+                        <option value="hunter">Охотник — визуальная погоня</option>
+                        <option value="stalker">Сталкер — дистанция и перехват</option>
+                        <option value="brute">Слепой брут — только слух (+4)</option>
+                    </select>
+                    <p class="metric-subtext" id="monsterHelp">Сталкер прогнозирует движение на 2 клетки и атакует вблизи. У брута зрение всегда 0. Настройки применяются при новой игре.</p>
+                </div>
+                <div class="control-group full-width-btn heatmap-control">
+                    <label class="heatmap-label" for="heatmapToggle"><input type="checkbox" id="heatmapToggle" aria-describedby="beliefLegend"> Показать карту убеждений ИИ (HMM Heatmap)</label>
+                    <p class="metric-subtext" id="beliefLegend">Режим демонстрации: распределение вероятностей по всему лабиринту. Яркость относительно текущего пика.</p>
+                </div>
+                <div class="control-group full-width-btn">
+                    <button class="btn btn-outline new-game-btn" onclick="initGame()">
+                        <span class="btn-icon">⚡</span> ПЕРЕГЕНЕРИРОВАТЬ ЛАБИРИНТ (CSP)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════
+         SECTION 3 — ALGORITHMS (AI UNDER THE HOOD)
+    ══════════════════════════════════════════════ -->
+    <section id="algorithms" class="algorithms-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-number">03 / THE BEHAVIORAL SYSTEMS</span>
+                <h2 class="section-title">UNDERSTAND THE ALGORITHMS</h2>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Card 1 — CSP -->
+                <article class="algo-card" id="cardCSP">
+                    <div class="card-glow"></div>
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon icon-neural">
+                            <svg viewBox="0 0 80 80" class="icon-svg">
+                                <circle cx="40" cy="40" r="15" class="icon-core"/>
+                                <circle cx="20" cy="20" r="5" class="icon-node"/>
+                                <circle cx="60" cy="20" r="5" class="icon-node"/>
+                                <circle cx="20" cy="60" r="5" class="icon-node"/>
+                                <circle cx="60" cy="60" r="5" class="icon-node"/>
+                                <circle cx="40" cy="10" r="4" class="icon-node"/>
+                                <circle cx="40" cy="70" r="4" class="icon-node"/>
+                                <line x1="40" y1="40" x2="20" y2="20" class="icon-link"/>
+                                <line x1="40" y1="40" x2="60" y2="20" class="icon-link"/>
+                                <line x1="40" y1="40" x2="20" y2="60" class="icon-link"/>
+                                <line x1="40" y1="40" x2="60" y2="60" class="icon-link"/>
+                                <line x1="40" y1="40" x2="40" y2="10" class="icon-link"/>
+                                <line x1="40" y1="40" x2="40" y2="70" class="icon-link"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="card-title">LEVEL GENERATION</h3>
+                    <p class="card-week">CSP — Неделя 3</p>
+                    <p class="card-description">
+                        Лабиринт генерируется с соблюдением системы ограничений: путь [Старт → Ключ → Выход] 
+                        гарантированно существует, ключ незаблокирован, а монстр стартует на безопасном расстоянии.
+                    </p>
+                    <div class="card-tag">Constraint Satisfaction Problem</div>
+                </article>
+
+                <!-- Card 2 — HMM -->
+                <article class="algo-card" id="cardHMM">
+                    <div class="card-glow"></div>
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon icon-echo">
+                            <svg viewBox="0 0 80 80" class="icon-svg">
+                                <circle cx="40" cy="40" r="8" class="icon-core-red"/>
+                                <circle cx="40" cy="40" r="18" class="icon-ring" fill="none"/>
+                                <circle cx="40" cy="40" r="28" class="icon-ring ring-fade" fill="none"/>
+                                <circle cx="40" cy="40" r="36" class="icon-ring ring-fade-2" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="card-title">MONSTER HEARING</h3>
+                    <p class="card-week">HMM — Неделя 7</p>
+                    <p class="card-description">
+                        Каждый шаг по шумным плиткам вызывает акустический сигнал. Скрытая Марковская Модель пересчитывает
+                        матрицу апостериорных вероятностей (Belief Distribution), направляя патруль к источнику шума.
+                    </p>
+                    <div class="card-tag">Hidden Markov Model</div>
+                </article>
+
+                <!-- Card 3 — A* -->
+                <article class="algo-card" id="cardAStar">
+                    <div class="card-glow"></div>
+                    <div class="card-icon-wrapper">
+                        <div class="card-icon icon-grid">
+                            <svg viewBox="0 0 80 80" class="icon-svg">
+                                <rect x="10" y="10" width="18" height="18" class="icon-block"/>
+                                <rect x="32" y="10" width="18" height="18" class="icon-block"/>
+                                <rect x="54" y="10" width="18" height="18" class="icon-block"/>
+                                <rect x="10" y="32" width="18" height="18" class="icon-block"/>
+                                <rect x="32" y="32" width="18" height="18" class="icon-block-active"/>
+                                <rect x="54" y="32" width="18" height="18" class="icon-block"/>
+                                <rect x="10" y="54" width="18" height="18" class="icon-block"/>
+                                <rect x="32" y="54" width="18" height="18" class="icon-block"/>
+                                <rect x="54" y="54" width="18" height="18" class="icon-block"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="card-title">PURSUIT</h3>
+                    <p class="card-week">A* — Неделя 2</p>
+                    <p class="card-description">
+                        Луч Брезенхэма проверяет видимость: стены прерывают погоню. A* ведёт к видимой цели,
+                        последней известной позиции или источнику шума. Сталкер прогнозирует движение на два шага;
+                        слепой брут ориентируется только по акустическим наблюдениям HMM.
+                    </p>
+                    <div class="card-tag">A-Star Pathfinding</div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════
+         FOOTER
+    ══════════════════════════════════════════════ -->
+    <footer id="footer" class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3 class="footer-logo">
+                        <span class="logo-icon">▣</span> THE QUIET GRID
+                    </h3>
+                    <p class="footer-tagline">AI Fundamentals Final Project</p>
+                    <p class="footer-university">QAIRU 2026</p>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">NAVIGATION</h4>
+                    <ul>
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#game">Play</a></li>
+                        <li><a href="#algorithms">Algorithms</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">ALGORITHMS</h4>
+                    <ul>
+                        <li><a href="#cardCSP">CSP Generation (Week 3)</a></li>
+                        <li><a href="#cardHMM">HMM Hearing (Week 7)</a></li>
+                        <li><a href="#cardAStar">A* Pursuit (Week 2)</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">DEVELOPER</h4>
+                    <ul>
+                        <li>
+                            <a href="https://github.com/seeqwr" target="_blank" rel="noopener noreferrer" id="githubLink">
+                                <span class="github-icon">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                                    </svg>
+                                </span>
+                                GitHub Repository
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-line"></div>
+                <p class="footer-copyright">
+                    © 2026 The Quiet Grid — QAIRU. All rights reserved.
+                    <span class="footer-status">
+                        <span class="status-dot-small online"></span> SYSTEM ONLINE
+                    </span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ══════════════════════════════════════════════
+         SCRIPTS
+    ══════════════════════════════════════════════ -->
+    <script src="game.js"></script>
+    <script>
+        // Smooth scroll for nav anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Navbar blur on scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // Mobile nav toggle
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                navToggle.classList.toggle('active');
+            });
+        }
+
+        // Sliders value update
+        ['hearingRadius', 'visionRadius', 'gridSize'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const valDisplay = el.parentElement.querySelector('.slider-value');
+                el.addEventListener('input', () => {
+                    if (valDisplay) valDisplay.textContent = el.value;
+                });
+            }
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.algo-card, .section-header, .game-layout, .controls-panel').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
