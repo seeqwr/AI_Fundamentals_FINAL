@@ -1,0 +1,297 @@
+/* The simulation fills the viewport. Menus live in dialogs above it. */
+:root {
+    --field-ink: #152d3c;
+    --field-muted: #384e5d;
+    --field-accent: #236251;
+    --field-line: #526e81;
+    --field-glass: #e6eff4f2;
+    --field-mono: "Cascadia Mono", Consolas, monospace;
+    --field-inset: clamp(16px, 3vw, 52px);
+}
+.playfield { color: var(--field-ink); background: #a5b4bf; }
+.playfield .scene-panel {
+    position: relative;
+    top: auto;
+    border: 0;
+    border-radius: 0;
+    background: #a5b4bf;
+}
+.playfield .scene-viewport {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 420px;
+    max-height: none;
+    background: #a5b4bf;
+}
+.playfield .scene-vignette {
+    background:
+        linear-gradient(#e7eff5e0, #e7eff500 19%, #e7eff500 81%, #e7eff5e3),
+        radial-gradient(ellipse at 50% 48%, transparent 49%, #47647d27 100%);
+    box-shadow: none;
+}
+.playfield[data-first-person] .scene-vignette {
+    background: linear-gradient(180deg,#0a151cbb,transparent 17%,transparent 82%,#0a151ccb),
+        radial-gradient(ellipse at center,transparent 55%,#182c353d 100%);
+}
+.playfield[data-first-person] :is(.field-identity,.field-identity > span,.field-objective p,.field-keyboard,#crystalCount) {
+    color: #eff8f4; text-shadow: 0 1px 4px #101b25;
+}
+.field-header, .field-dock, .field-status {
+    position: absolute;
+    z-index: 3;
+    left: var(--field-inset);
+    right: var(--field-inset);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    pointer-events: none;
+}
+.field-header { top: 22px; padding-bottom: 16px; }
+.field-header::after, .field-dock::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background:
+        linear-gradient(var(--field-line),var(--field-line)) left center / 24px 1px no-repeat,
+        linear-gradient(var(--field-line),var(--field-line)) right center / 24px 1px no-repeat,
+        radial-gradient(circle, #4d6b7f 1px, transparent 1.4px) center / 8px 4px repeat-x;
+}
+.field-header::after { bottom: 0; }
+.field-dock::after { top: 0; }
+.field-identity { min-width: 0; }
+.field-identity h1 {
+    margin: 0;
+    font-size: clamp(18px, 2.15vw, 29px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: .11em;
+}
+.field-identity a { pointer-events: auto; color: inherit; display: inline-flex; align-items: center; gap: 12px; }
+.field-identity a::before, .field-alert::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    flex: none;
+    border: 1px solid currentColor;
+    transform: rotate(45deg);
+}
+.field-identity > span { display: block; color: var(--field-muted); font-size: 18px; margin-top: 4px; overflow-wrap: anywhere; }
+.field-actions, .field-tools { display: flex; align-items: center; gap: 9px; }
+.field-actions, .field-tools .inventory-slots, .field-tools .scene-view-controls { pointer-events: auto; }
+.field-button, .playfield .camera-toolbar, .playfield .minimap-panel,
+.field-tools .inv-slot, .field-tools .view-switch, .field-tools .scene-view-controls > button {
+    border: 1px solid var(--field-line);
+    border-radius: 2px 10px 2px 2px;
+    color: var(--field-ink);
+    background: var(--field-glass);
+    box-shadow: 0 3px 14px #1d3b5014;
+}
+.field-button {
+    min-height: 44px;
+    padding: 6px 14px;
+    font-size: 18px;
+}
+.field-button.icon-button { padding: 0; }
+.field-menu .icon { display: none; }
+.field-button:hover, .playfield .camera-toolbar .icon-button:hover {
+    background: #ccf1eb;
+    color: #174e4a;
+}
+.field-status {
+    top: 110px;
+    right: auto;
+    justify-content: flex-start;
+    gap: 13px;
+    font-size: 16px;
+    color: var(--field-muted);
+}
+.field-alert, .field-status .turn-label {
+    border: 1px solid #526e81ab;
+    background: var(--field-glass);
+    border-radius: 2px 9px 2px 2px;
+}
+.field-alert { color: var(--field-accent); font-weight: 650; display: inline-flex; gap: 9px; align-items: center; padding: 5px 11px; }
+.field-alert::before { width: 6px; height: 6px; background: #48a988; }
+.field-alert.danger { color: #7f291d; background: #ffdecf; }
+.field-alert.danger::before { background: #db6b42; }
+.field-status .turn-label { order: -1; display: grid; color: var(--field-muted); font-size: 15px; line-height: 1.1; padding: 7px 12px; min-width: 102px; }
+.field-status .turn-label b { font-family: var(--field-mono); font-variant-numeric: tabular-nums; color: var(--field-ink); font-size: clamp(28px, 3.1vw, 40px); }
+.field-dock { bottom: 19px; padding-top: 14px; }
+.field-objective p { margin: 0; color: var(--field-ink); font-size: clamp(18px, 1.8vw, 25px); line-height: 1.25; font-weight: 600; }
+.field-keyboard { color: var(--field-muted); font-size: 16px; }
+.field-keyboard span { margin-left: 14px; }
+.field-tools { flex-shrink: 0; }
+.field-tools .inventory-slots { display: flex; margin: 0; }
+.field-tools #invKeySlot { display: none; }
+.field-tools .inv-slot { height: 48px; }
+.field-tools .inv-slot > span { font-size: 18px; }
+.field-tools .decoy-slot b { background: #d1e5ed; color: var(--field-ink); }
+.field-tools .decoy-slot.targeting, .field-tools .decoy-slot:not(:disabled):hover { border-color: #21768b; background: #d0f5f6; }
+.field-tools .view-switch button { min-width: 42px; min-height: 37px; padding: 4px 7px; font: 650 17px var(--field-mono); color: var(--field-muted); }
+.field-tools .view-switch button.selected { background: #bfdadf; color: #173f4d; }
+.field-aim { position: absolute; right: 0; bottom: 100%; margin: 0 0 12px; padding: 4px 9px; background: var(--field-glass); color: var(--field-ink); font-size: 18px; text-align: right; }
+.field-aim:empty { display: none; }
+.playfield .camera-toolbar { right: var(--field-inset); top: 110px; }
+.playfield .camera-toolbar .icon-button { color: var(--field-ink); }
+.playfield .toolbar-divider { background: #7791a2; }
+.playfield button:focus-visible, .app-dialog button:focus-visible { outline: 2px solid #146679; outline-offset: 2px; }
+.playfield .minimap-panel { z-index: 4; top: 185px; left: var(--field-inset); }
+.playfield .minimap-panel > span { color: var(--field-ink); }
+.field-tools .robot-map-toggle:not([hidden]) { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 8px; font: inherit; cursor: pointer; }
+.robot-map-toggle::before { content: ''; width: 8px; height: 8px; flex: none; border: 1px solid var(--field-muted); border-radius: 50%; }
+.robot-map-toggle[aria-pressed="true"]::before { border-color: #9c3447; background: #df5c68; }
+.playfield .scene-compass { right: var(--field-inset); bottom: 97px; background: var(--field-glass); border-color: #526e81ab; }
+.playfield .scene-compass span { color: var(--field-ink); }
+.playfield .scene-compass span:first-child { color: var(--field-accent); }
+.playfield .scene-compass::after { background: var(--field-line); }
+.playfield .canvas-overlay { padding: 0 20px 105px; align-items: end; }
+.playfield .start-card { display: flex; width: auto; padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; }
+.playfield .start-card .button, .app-dialog .button-primary, .playfield .game-over-box .button-primary {
+    background: #c9f08d;
+    color: #172e22;
+    border: 1px solid #466b42;
+    border-radius: 2px 12px 2px 2px;
+}
+.playfield .start-card .button { padding-inline: 28px; box-shadow: 0 5px 22px #244a4144; }
+.playfield .start-card .button:hover, .app-dialog .button-primary:hover { background: #dbffa9; }
+.playfield .game-over-overlay { background: #233b567d; z-index: 12; }
+.playfield .game-over-box { background: #e4edf3; color: var(--field-ink); border-color: var(--field-line); max-height: 100%; overflow: auto; }
+.playfield .game-over-box p, .playfield .game-over-box > p:not(.eyebrow) { color: var(--field-muted); }
+.playfield .game-over-box .button { white-space: normal; }
+.game-toast { width: max-content; max-width: min(82vw, 760px); bottom: 98px; background: var(--field-glass); border-color: var(--field-line); color: var(--field-ink); }
+.app-dialog {
+    --ink: var(--field-ink);
+    --muted: var(--field-muted);
+    --surface: #dae7ee;
+    --teal: var(--field-accent);
+    --line: #9db0bc;
+    background: #eaf1f5;
+    border-color: var(--line);
+    border-radius: 3px 18px 3px 3px;
+}
+.app-dialog::backdrop { background: #233b5688; }
+.app-dialog .button-secondary, .app-dialog select, .app-dialog .mission-choice,
+.playfield .game-over-box .button-secondary {
+    background-color: #d6e4ed;
+    border-color: var(--field-line);
+    color: var(--field-ink);
+}
+.app-dialog .mission-choice.selected { border-color: #4d7c73; background: #d0eee5; }
+.app-dialog .mission-choice b, .app-dialog .switch-row, .app-dialog .control-group label,
+.app-dialog .dialog-heading .icon-button, .app-dialog .text-button { color: var(--field-ink); }
+.app-dialog :is(p, .metric-subtext, .telemetry-note, .control-group label > span, .guide-note p, .mission-choice small, .alert-row > span, .scanner-row > span) { color: var(--field-muted); }
+.app-dialog :is(.telemetry-card, .guide-note, .algorithm-tag, .play-preferences, .stress-graph) { background: #d9e7ee; border-color: var(--line); }
+.app-dialog .switch { background: #698597; }
+.app-dialog .switch-row input:checked + .switch { background: #367865; }
+.app-dialog .switch-row input:checked + .switch::after { background: #e6f4ef; }
+.app-dialog .mode-pill.patrol, .app-dialog .status-low, .app-dialog #detectionProb { color: #254f4f; background: #c8e7e1; }
+.operations-dialog { max-width: min(780px, calc(100vw - 32px)); }
+.operations-dialog .mission-selector { margin-top: 20px; }
+.operations-dialog .mission-buttons { flex-direction: column; }
+.operations-dialog .mission-choice { flex: 0 0 auto; }
+.operations-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#telemetryDialog .lab-control { margin-top: 20px; }
+.objective-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+#crystalCount {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 10px;
+    color: var(--field-accent);
+    font: 650 26px var(--field-mono);
+}
+#crystalCount::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #81b743;
+    border: 1px solid #3f6425;
+    transform: rotate(45deg);
+}
+.new-sector-action { margin: 24px 0; }
+.legacy-missions { margin-bottom: 24px; }
+.legacy-missions > summary { cursor: pointer; color: var(--field-muted); }
+.mobile-controls [data-move] { touch-action: none; user-select: none; }
+.playfield[data-sector] {
+    --field-ink: #eef4f1;
+    --field-muted: #b1c3c3;
+    --field-line: #4a5b60;
+    --field-glass: #101a20ed;
+    background: var(--sector-void);
+}
+[data-sector] .scene-vignette {
+    background: linear-gradient(180deg,#080d13cc,transparent 22%,transparent 78%,#080d13e3),
+        radial-gradient(ellipse at 50% 50%,transparent 43%,#04081066);
+}
+[data-sector] .field-header::after, [data-sector] .field-dock::after {
+    height: 1px;
+    background: linear-gradient(90deg,var(--field-accent) 0 48px,#859b9c57 48px,transparent 75%);
+}
+[data-sector] .field-identity h1 { color: var(--field-ink); font-family: var(--field-mono); letter-spacing: .14em; }
+[data-sector] .field-identity a::before {
+    height: 15px; width: 14px; transform: skew(-13deg);
+    border: 0; background: repeating-linear-gradient(90deg,var(--field-accent) 0 3px,transparent 3px 5px);
+}
+[data-sector] .field-identity > span { color: var(--field-accent); }
+[data-sector] .field-button, [data-sector] .camera-toolbar, [data-sector] .field-tools .inv-slot,
+[data-sector] .view-switch, [data-sector] .field-alert, [data-sector] .turn-label {
+    border-radius: 3px;
+}
+[data-sector] .field-alert::before, [data-sector] #crystalCount::before { background: currentColor; }
+[data-sector] .field-alert.danger { color: #ffb095; background: #371d20; }
+[data-sector] .field-tools .decoy-slot b, [data-sector] .field-tools .view-switch button.selected,
+[data-sector] .field-button:hover, [data-sector] .camera-toolbar .icon-button:hover,
+[data-sector] .field-tools .decoy-slot:not(:disabled):hover, [data-sector] .field-tools .decoy-slot.targeting {
+    color: var(--field-accent); background: #293c40;
+}
+[data-sector] .start-card .button {
+    background: var(--field-accent); border: 0; color: #101a1d; border-radius: 3px;
+    box-shadow: 0 3px 20px #050a1066;
+}
+[data-sector] .start-card .button:hover { filter: brightness(1.08); }
+[data-sector] .game-over-box { background: #18242a; }
+[data-sector] .game-over-box .button-secondary { background: #24353a; }
+[data-sector] button:focus-visible { outline-color: var(--field-accent); }
+@media (max-width: 480px) {
+    #crystalCount { font-size: 20px; }
+    .new-sector-action, .operations-actions > button { white-space: normal; text-align: left; }
+}
+@media (max-width: 700px) {
+    .field-header { top: 13px; padding-bottom: 10px; flex-wrap: wrap; gap: 9px; }
+    .field-identity h1 { letter-spacing: .055em; }
+    .field-identity a { gap: 8px; }
+    .field-identity a::before { width: 7px; height: 7px; }
+    .field-identity > span { margin-top: 3px; font-size: 16px; }
+    .field-actions { gap: 5px; }
+    .field-button { font-size: 16px; padding-inline: 8px; min-height: 40px; }
+    .field-button.icon-button { width: 40px; height: 40px; }
+    .field-menu { width: 40px; height: 40px; display: grid; place-items: center; padding: 0; }
+    .field-menu .icon { display: block; }
+    .field-menu span { display: none; }
+    .field-actions .help-control { display: none; }
+    .field-status { top: 105px; }
+    .field-dock { bottom: 10px; display: grid; padding-top: 8px; gap: 8px; }
+    .field-keyboard { display: none; }
+    .field-tools { justify-content: space-between; }
+    .field-tools:has(.robot-map-toggle:not([hidden])) { flex-wrap: wrap; }
+    .field-aim { margin-bottom: 10px; font-size: 16px; }
+    .playfield .camera-toolbar { top: 177px; flex-direction: row; }
+    .playfield .camera-toolbar .toolbar-divider { width: 1px; height: auto; margin: 4px 1px; }
+    .playfield .minimap-panel { top: 230px; }
+    .playfield .mobile-controls button { background: var(--field-glass); border-color: var(--field-line); color: var(--field-ink); }
+    .playfield .scene-compass { bottom: 115px; }
+    .playfield .game-playing .mobile-controls { bottom: 115px; }
+    .game-toast { bottom: 220px; font-size: 18px; }
+}
+@media (max-width: 370px) {
+    .field-status { top: 121px; }
+    .playfield .camera-toolbar { top: 191px; }
+    .playfield .minimap-panel { top: 242px; }
+}
+@media (min-width: 500px) and (max-width: 700px) {
+    .playfield .camera-toolbar { top: 105px; }
+    .playfield .minimap-panel { top: 185px; }
+}

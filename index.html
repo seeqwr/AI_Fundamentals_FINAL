@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#cbd8e1">
+    <meta name="description" content="The Quiet Grid — күзетке байқалмай өтетін 3D ойын. Кристалдарды жинап, патрульдерді айналып өт те, шығаберіске жет.">
+    <title>The Quiet Grid — тыныштық өнері</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b9388'/%3E%3Cpath d='M17 23 32 14l15 9v18l-15 9-15-9Zm0 0 15 9 15-9M32 32v18' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css?v=live-sector-1">
+    <link rel="stylesheet" href="playfield.css?v=maze-10">
+    <script defer src="vendor/three.min.js"></script>
+    <script defer src="sector-art.js"></script>
+    <script defer src="scene3d.js?v=kk-1"></script>
+    <script defer src="audio.js?v=sectors-4"></script>
+    <script defer src="campaign.js?v=kk-1"></script>
+    <script defer src="game.js?v=kk-1"></script>
+    <script defer src="interface.js?v=kk-1"></script>
+</head>
+<body>
+    <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 9 5v9l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v9m-4.5-12.5 9-5"/></symbol>
+        <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7V5Z"/></symbol>
+        <symbol id="i-key" viewBox="0 0 24 24"><circle cx="15.5" cy="8.5" r="5.5"/><path d="m11.5 12.5-9 9v-4l2-2h3v-3h3"/></symbol>
+        <symbol id="i-exit" viewBox="0 0 24 24"><path d="M13 4H5v16h8M10 12h11m-4-4 4 4-4 4"/></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></symbol>
+        <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .7-1.5 1-1.5 2.5M12 17h.01"/></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+        <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+        <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-2 8M20 4v6h-6"/></symbol>
+        <symbol id="i-focus" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v6L4 19a1.5 1.5 0 0 0 1.3 2h13.4A1.5 1.5 0 0 0 20 19L14 9V3M7 14h10"/></symbol>
+        <symbol id="i-signal" viewBox="0 0 24 24"><path d="M3 12h3l3-7 5 14 3-7h4"/></symbol>
+        <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18m6-18v18"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m8 5 7 7-7 7"/></symbol>
+        <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 4 6 8H3v8h3l5 4V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+        <symbol id="i-muted" viewBox="0 0 24 24"><path d="M11 4 6 8H3v8h3l5 4V4Zm5 5 6 6m-6 0 6-6"/></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+        <symbol id="i-fullscreen" viewBox="0 0 24 24"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></symbol>
+        <symbol id="i-fullscreen-exit" viewBox="0 0 24 24"><path d="M4 9h5V4m6 0v5h5M9 20v-5H4m16 0h-5v5"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    </svg>
+    <main class="playfield" id="game" aria-label="The Quiet Grid">
+        <section class="scene-panel" aria-label="Ойын алаңы">
+                <div class="scene-viewport" id="sceneViewport">
+                    <canvas id="sceneCanvas" aria-label="Үшөлшемді лабиринт. WASD немесе бағыттауыш пернелермен жүр. Құты лақтыру үшін E пернесін бас."></canvas><canvas id="gameCanvas" width="800" height="600" aria-label="Лабиринттің үстінен көрінісі" hidden></canvas><div class="scene-vignette" aria-hidden="true"></div>
+                    <header class="field-header">
+                        <div class="field-identity">
+                            <h1><a href="./">THE QUIET GRID</a></h1>
+                            <span id="currentMissionName">Кездейсоқ сектор</span>
+                        </div>
+                        <nav class="field-actions" aria-label="Ойын мәзірі">
+                            <button class="field-button field-menu" data-dialog="missionsDialog" aria-label="Мәзір"><svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg><span>Мәзір</span></button>
+                            <button class="field-button icon-button" id="soundToggle" aria-label="Дыбысты өшіру" aria-pressed="true" title="Дыбысты өшіру"><svg class="icon"><use href="#i-volume"/></svg><span id="soundState" hidden>Дыбыс қосулы</span></button>
+                            <button class="field-button icon-button" id="fullscreenToggle" aria-label="Толық экранға өту" aria-pressed="false" title="Толық экранға өту" hidden><svg class="icon" aria-hidden="true"><use href="#i-fullscreen"/></svg></button>
+                            <button class="field-button icon-button" data-dialog="settingsDialog" aria-label="Баптаулар" title="Баптаулар"><svg class="icon"><use href="#i-settings"/></svg></button>
+                            <button class="field-button icon-button help-control" data-dialog="guideDialog" aria-label="Қалай ойнау керек?" title="Қалай ойнау керек?"><svg class="icon"><use href="#i-help"/></svg></button>
+                        </nav>
+                    </header>
+                    <div class="field-status">
+                        <span id="sceneStatus" hidden>ТАКТИКАЛЫҚ ШОЛУ</span>
+                        <span class="field-alert" id="fieldAlert">Дайын</span>
+                        <span class="turn-label"><span id="clockLabel">Уақыт</span> <b id="turnCounter">0:00</b></span>
+                    </div><div class="minimap-panel" id="minimapPanel" hidden><span>КАРТА</span><canvas id="minimapCanvas" width="180" height="180" aria-label="Лабиринттің зерттелген бөлігінің шағын картасы"></canvas></div>
+                    <div class="camera-toolbar" id="cameraToolbar" role="group" aria-label="Камера"><button class="icon-button" id="zoomIn" title="Жақындату" aria-label="Жақындату"><svg class="icon"><use href="#i-plus"/></svg></button><button class="icon-button" id="zoomOut" title="Алыстату" aria-label="Алыстату"><svg class="icon"><use href="#i-minus"/></svg></button><span class="toolbar-divider"></span><button class="icon-button" id="rotateCamera" title="Камераны бұру" aria-label="Камераны бұру"><svg class="icon"><use href="#i-rotate"/></svg></button><button class="icon-button" id="overviewCamera" title="Лабиринтті толық көрсету" aria-label="Лабиринтті толық көрсету"><svg class="icon"><use href="#i-grid"/></svg></button><button class="icon-button" id="resetCamera" title="Камераны ойыншыға қайтару" aria-label="Камераны ойыншыға қайтару"><svg class="icon"><use href="#i-focus"/></svg></button></div>
+                    <div class="scene-caption" hidden><span id="cameraHint"></span></div>
+                    <div class="field-dock">
+                        <div class="field-objective">
+                            <div class="objective-line"><p id="fieldObjective" aria-live="polite">Барлық кристалды жина</p><strong id="crystalCount" aria-label="Жиналған кристалдар">0 / 6</strong></div>
+                            <span class="field-keyboard">WASD · қозғалу <span id="lookHint" hidden>← → · бұрылу</span><span id="sneakHint" hidden>Shift · дыбыссыз жүру</span><span id="waitHint" hidden>Бос орын · күту</span></span>
+                        </div>
+                        <div class="field-tools">
+                            <p id="decoyHint" aria-live="polite" class="field-aim"></p>
+                            <div class="inventory-slots" id="inventory"><div class="inv-slot key-slot" id="invKeySlot" title="Кілт әлі табылған жоқ"><svg class="icon"><use href="#i-lock"/></svg><span>Кілт жоқ</span></div><button class="inv-slot decoy-slot" id="invDecoySlot" title="Дыбыс шығаратын құты (E)" aria-label="Дыбыс шығаратын құтыны лақтыру" aria-pressed="false" aria-describedby="decoyHint" disabled><svg class="icon"><use href="#i-flask"/></svg><span>Құты</span><b id="decoyCount">3</b></button></div>
+                            <div class="scene-view-controls"><button type="button" class="robot-map-toggle" id="toggleMapRobot" aria-pressed="true" aria-label="Роботты картада көрсету" aria-controls="gameCanvas minimapCanvas" title="Роботты картадан жасыру" hidden>Робот</button><button class="icon-button" id="toggleMinimap" aria-label="Шағын картаны көрсету" aria-controls="minimapPanel" aria-expanded="false" title="Шағын карта ойын кезінде ашылады" disabled><svg class="icon"><use href="#i-grid"/></svg></button><div class="view-switch" aria-label="Ойын алаңының көрінісі"><button id="view3d" class="selected" aria-pressed="true">3D</button><button id="view2d" aria-pressed="false">2D</button></div></div>
+                        </div>
+                    </div>
+                    <div class="canvas-overlay" id="canvasOverlay"><div class="start-card"><span class="start-card-icon"><svg class="icon"><use href="#i-cube"/></svg></span><button class="button button-primary" id="startGameButton" onclick="initGame()"><svg class="icon"><use href="#i-play"/></svg> Секторға кіру</button></div></div>
+        <div class="mobile-controls" aria-label="Қозғалысты басқару"><button data-move="left" aria-label="Солға"><svg class="icon left"><use href="#i-chevron"/></svg></button><div><button data-move="up" aria-label="Жоғары"><svg class="icon up"><use href="#i-chevron"/></svg></button><button data-move="down" aria-label="Төмен"><svg class="icon down"><use href="#i-chevron"/></svg></button></div><button data-move="right" aria-label="Оңға"><svg class="icon"><use href="#i-chevron"/></svg></button><button data-move="wait" class="wait-control" aria-label="Бір жүріс күту">Күту</button></div>
+                    <div class="game-over-overlay" id="gameOverOverlay" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle" aria-describedby="gameOverSub" tabindex="-1"><div class="game-over-box"><span class="end-symbol"><svg class="icon"><use href="#i-cube"/></svg></span><p class="eyebrow">СИМУЛЯЦИЯ АЯҚТАЛДЫ</p><h2 id="gameOverTitle">Байланыс үзілді.</h2><p id="gameOverSub">Дрон сені байқап қалды. Басқа жолмен өтіп көр.</p><button class="button button-primary" id="nextMission" hidden>Келесі тапсырма</button><button class="button button-secondary" onclick="initGame()"><svg class="icon"><use href="#i-rotate"/></svg> Қайта ойнау</button></div></div>
+                </div>
+        </section>
+    </main>
+    <dialog class="app-dialog operations-dialog" id="missionsDialog" aria-labelledby="missionsTitle">
+        <form method="dialog"><div class="dialog-heading"><h2 id="missionsTitle">Ойын мәзірі</h2><button class="icon-button" aria-label="Жабу"><svg class="icon"><use href="#i-close"/></svg></button></div></form>
+        <button class="button button-primary new-sector-action" id="newSector">Жаңа кездейсоқ сектор</button>
+        <details class="legacy-missions"><summary>Қадамдық тапсырмалар</summary>
+        <section class="mission-selector" id="missionBar" aria-label="Тапсырманы таңдау">
+            <div class="mission-buttons">
+                <button type="button" class="mission-choice selected" data-mission="0" aria-pressed="true"><span><b>Көз алдында</b><small class="mission-best">Орындалмаған</small></span></button>
+                <button type="button" class="mission-choice" data-mission="1" aria-pressed="false"><span><b>Қос патруль</b><small class="mission-best">Орындалмаған</small></span></button>
+                <button type="button" class="mission-choice" data-mission="2" aria-pressed="false"><span><b>Тыныш торап</b><small class="mission-best">Орындалмаған</small></span></button>
+            </div>
+            <p id="missionBrief">Патрульдің қай жаққа бұрылатынын бақыла. Кілтті алып, тасаларды бойлай күзет бекетін айналып өт.</p>
+        </section>
+        </details>
+
+        <div class="operations-actions">
+            <button class="button button-secondary" id="restartGame"><svg class="icon"><use href="#i-rotate"/></svg> Қайта бастау</button>
+            <button class="button button-secondary" data-dialog="telemetryDialog">ЖИ телеметриясы</button>
+            <button class="button button-secondary" data-dialog="guideDialog">Басқару</button>
+        </div>
+    </dialog>
+    <dialog class="app-dialog" id="telemetryDialog" aria-labelledby="telemetryTitle">
+        <form method="dialog"><div class="dialog-heading"><h2 id="telemetryTitle">ЖИ телеметриясы</h2><button class="icon-button" aria-label="Жабу"><svg class="icon"><use href="#i-close"/></svg></button></div></form>
+        <p class="engine-badge" id="engineBadge">ІСКЕ ҚОСУҒА ДАЙЫН</p>
+                <section class="telemetry-card"><div class="section-label">ТЕЛЕМЕТРИЯ</div><div class="alert-row"><span>Дабыл деңгейі</span><strong class="metric-value status-low" id="alertLevel">ТӨМЕН</strong></div><div class="metric-bar"><span id="alertBar" style="width:5%"></span></div><div class="ai-mode-row"><span class="mode-pill patrol" id="aiStatusMode">ПАТРУЛЬ</span><span id="detectionProb">5%</span></div><p class="metric-subtext" id="monsterDetails">1 патруль · көру бұрышы 90° · қабырға тасасында ойыншы көрінбейді</p><div class="scanner-row"><div class="stress-graph" id="stressGraph" role="img" aria-label="Ойыншының ширығу деңгейі. Ойын әлі басталған жоқ."><svg viewBox="0 0 200 40"><polyline class="stress-line" points="0,22 200,22"/></svg></div><span>HMM<br>СИГНАЛ</span></div><p class="telemetry-note">Пайыз HMM моделінің бағасын көрсетеді</p></section>
+                <section class="lab-control"><label class="switch-row" for="heatmapToggle"><span><svg class="icon"><use href="#i-eye"/></svg> ЖИ болжамы</span><input type="checkbox" id="heatmapToggle" aria-describedby="beliefLegend"><span class="switch" aria-hidden="true"></span></label><p id="beliefLegend">Дронның сені қай жерден табуы ықтимал екенін көрсетеді.</p></section>
+
+        <p id="gameEventLog" class="metric-subtext" aria-live="polite">Алғашқы қадамыңды жаса.</p>
+        <button class="text-button guide-algorithms" data-dialog="algorithmsDialog">ЖИ қалай жұмыс істейді?</button>
+    </dialog>
+    <dialog class="app-dialog" id="settingsDialog" aria-labelledby="settingsTitle"><form method="dialog"><div class="dialog-heading"><div><p class="eyebrow">СИМУЛЯЦИЯ БАПТАУЛАРЫ</p><h2 id="settingsTitle">Сенің лабиринтің</h2></div><button class="icon-button" aria-label="Жабу"><svg class="icon"><use href="#i-close"/></svg></button></div></form><p class="dialog-intro">Карта, бағыттар мен дыбыс бірден өзгереді. Ойын режимі мен лабиринт баптаулары келесі ойында қолданылады.</p><div class="settings-fields"><div class="control-group"><label for="gameMode">Ойын режимі</label><select id="gameMode"><option value="sector">Кездейсоқ сектор</option><option value="campaign">Қадамдық тапсырмалар</option><option value="classic">Кездейсоқ лабиринт</option></select><p id="modeHelp">Кездейсоқ секторда күзет өздігінен қозғалады. Таңдаған режимің келесі ойында қолданылады.</p></div><section class="play-preferences" aria-label="Карта мен дыбыс">
+<label class="switch-row" for="fullMapToggle"><span><svg class="icon"><use href="#i-grid"/></svg> Толық картаны басынан көрсету</span><input type="checkbox" id="fullMapToggle" checked aria-describedby="fullMapHelp"><span class="switch" aria-hidden="true"></span></label>
+<p id="fullMapHelp" class="metric-subtext">Тапсырмаларда карта, күзет және күзеттің көру аймақтары көрінеді. Зерттелмеген жерлерді жасыру үшін осы баптауды өшір.</p>
+<label class="switch-row patrol-setting" for="routesToggle"><span><svg class="icon"><use href="#i-grid"/></svg> Патруль бағыттары</span><input type="checkbox" id="routesToggle" checked aria-describedby="routesHelp"><span class="switch" aria-hidden="true"></span></label><p id="routesHelp" class="metric-subtext">Үзік сызық патрульдің әдеттегі бағытын көрсетеді. Күзет дыбыс естісе немесе сені байқаса, бағытын өзгертеді.</p>
+<label class="switch-row sound-setting" for="soundEnabled"><span><svg class="icon"><use href="#i-volume"/></svg> Ойын дыбыстары</span><input type="checkbox" id="soundEnabled" checked><span class="switch" aria-hidden="true"></span></label>
+<div class="control-group volume-control"><label for="soundVolume">Дыбыс деңгейі <span id="volumeValue">35%</span></label><input type="range" id="soundVolume" min="0" max="100" step="5" value="35"></div>
+<button type="button" class="button button-secondary" id="testSound"><svg class="icon"><use href="#i-volume"/></svg> Тыңдап көру</button>
+<p id="audioStatus" class="metric-subtext" role="status" aria-live="polite">Аяқ дыбысы, шынының сынуы, құты мен дрон сигналдары. Дыбыс түймені басқаннан кейін қосылады.</p>
+</section><section id="proceduralOptions" class="procedural-options" hidden><div class="control-group"><label for="monsterType">Қарсылас</label><select id="monsterType"><option value="hunter">Аңшы — көрсе, ізіңе түседі</option><option value="stalker">Ізкесер — қайда баратыныңды болжайды</option><option value="brute">Соқыр дәу — дыбысқа қарай жүреді</option></select><p id="monsterHelp">Ізкесер жолыңды кеседі. Соқыр дәу көрмейді, ал оның есту қашықтығы басқа қарсыластардікінен 4 торкөзге артық.</p></div><div class="control-group"><label for="gridSize">Лабиринт өлшемі <span><b id="gridSizeValue">21</b> × <b id="gridSizeValueMirror">21</b></span></label><input type="range" id="gridSize" min="15" max="27" step="2" value="21"></div><div class="control-group"><label for="hearingRadius">Қарсыластың есту қашықтығы <span><b id="hearingValue">5</b> торкөз</span></label><input type="range" id="hearingRadius" min="2" max="10" value="5"></div><div class="control-group"><label for="visionRadius">Қарсыластың көру қашықтығы <span><b id="visionValue">4</b> торкөз</span></label><input type="range" id="visionRadius" min="2" max="8" value="4"></div></section></div><button class="button button-primary dialog-action" id="applySettings"><svg class="icon"><use href="#i-play"/></svg> Ойынды бастау</button></dialog>
+    <dialog class="app-dialog guide-dialog" id="guideDialog" aria-labelledby="guideTitle"><form method="dialog"><div class="dialog-heading"><div><p class="eyebrow">ҚЫСҚАША НҰСҚАУЛЫҚ</p><h2 id="guideTitle">Дыбыссыз жүріп үйрен</h2></div><button class="icon-button" aria-label="Жабу"><svg class="icon"><use href="#i-close"/></svg></button></div></form><div class="guide-grid"><article><span class="guide-icon teal"><svg class="icon"><use href="#i-key"/></svg></span><h3>Алдымен кристалдарды жина</h3><p>Кездейсоқ секторда кристалдар үш-үштен екі топқа бөлінген. Алтауын да жина да, ашылған порталға жет. Қадамдық тапсырмаларда порталды ашу үшін кілт жеткілікті.</p></article><article><span class="guide-icon amber"><svg class="icon"><use href="#i-signal"/></svg></span><h3>Аяғыңның астына қара</h3><p>Жүру үшін WASD немесе бағыттауыш пернелерді басып тұр. Екі бағытты қатар бассаң, қиғаш жүресің. Телефонда бағыттауышты басып тұрып, саусағыңды қалаған жаққа сырғыт. Жай жүрістің дыбысы жақыннан естіледі, ал торлы еденнің дыбысы екі есе алысқа жетеді. Shift пернесін басып тұрсаң, торлы еденде де дыбыссыз жүресің. Күзеттің көру аймағын бақыла. Мәзір ашық тұрғанда сектордағы ойын кідіреді.</p></article><article><span class="guide-icon coral"><svg class="icon"><use href="#i-eye"/></svg></span><h3>Күзеттің көзіне түспе</h3><p>Жолақты конус роботтың қай жаққа қарап тұрғанын көрсетеді. Робот тоқтағанда сенсорын ашық өткелдерге бұрады. Қабырға тасасында сені көре алмайды. Көзден таса болсаң, робот сені соңғы рет көрген жерді тексереді.</p></article><article><span class="guide-icon blue"><svg class="icon"><use href="#i-flask"/></svg></span><h3>Күзетті басқа жаққа бұр</h3><p>E пернесін басып, еденнің көрініп тұрған торкөзін таңда. Күзетші құтының сынғанын естісе, дыбыс шыққан жерге барады. Кездейсоқ секторда нысана көздеп тұрғанда да патруль қозғала береді.</p></article></div><div class="guide-note"><svg class="icon"><use href="#i-cube"/></svg><p>Кездейсоқ лабиринтте қызыл нүкте роботтың орнын кез келген қашықтықтан көрсетеді. Нүктені жасыру немесе қайта көрсету үшін «Робот» түймесін бас. Араларыңда қабырға болмаса, дәлізде роботтың өзін де көресің. W/S пернелерімен алға не артқа, A/D пернелерімен бүйірге жүр. Қиғаш жүру үшін екі пернені қатар бас. Дыбыссыз жүру үшін Shift пернесін басып тұр. ←/→ пернелері көріністі 90° бұрады. Айналаға қарау үшін көріністі тінтуірмен немесе саусағыңмен сүйре. Сектор мен тапсырмаларда WASD карта бағыттарымен қозғалтады. Тінтуір дөңгелегі масштабты өзгертеді.</p></div><button class="text-button guide-algorithms" data-dialog="algorithmsDialog">Жасанды интеллект қалай жұмыс істейді?</button></dialog>
+    <dialog class="app-dialog algorithms-dialog" id="algorithmsDialog" aria-labelledby="algorithmsTitle"><form method="dialog"><div class="dialog-heading"><div><p class="eyebrow">ОЙЫН АЛГОРИТМДЕРІ</p><h2 id="algorithmsTitle">Дрон сені қалай іздейді?</h2></div><button class="icon-button" aria-label="Жабу"><svg class="icon"><use href="#i-close"/></svg></button></div></form><p class="dialog-intro">Үш алгоритм лабиринтті құрады, дыбысты талдайды және жүру бағытын таңдайды.</p><div class="algorithm-list"><article><span class="algorithm-tag">CSP</span><div><h3>Шарттарды тексеріп лабиринт құру</h3><p>Кездейсоқ лабиринт құрылғанда алгоритм кілтке және шығаберіске жетуге болатынын тексереді. Тактикалық тапсырмалар қолмен жасалған. Әрқайсысында күзетке байқалмай өтетін жол тексерілген.</p></div></article><article><span class="algorithm-tag">HMM</span><div><h3>Есту және ықтималдыққа негізделген жад</h3><p>Дыбыс естілгенде дрон сенің орның туралы болжамын жаңартады. Сынған құты оның назарын дыбыс шыққан жерге аударады. Сені көріп қалса, дрон көргеніне сүйенеді.</p></div></article><article><span class="algorithm-tag">A*</span><div><h3>Жол табу және қуу</h3><p>Дрон көрініп тұрған нысанаға немесе сигнал соңғы рет шыққан жерге жол салады. Ізкесер сенің келесі қадамыңды да болжайды.</p></div></article></div><div class="guide-note"><svg class="icon"><use href="#i-eye"/></svg><p>«ЖИ болжамы» баптауын қосып, HMM моделінің нәтижесін 3D көріністе қара. Бұл режим ЖИ әр торкөзге қандай ықтималдық бергенін көрсетеді.</p></div></dialog>
+    <noscript><p class="noscript-message">Ойынды бастау үшін браузерде JavaScript қос.</p></noscript>
+</body>
+</html>
